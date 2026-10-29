@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | HealthCheck AI{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Heading -->
+<section class="dashboard-heading">
+    <div>
+        <span class="badge">Your Workspace</span>
+
+        <h1>Hello, {{ user['name'] }}!</h1>
+
+        <p class="muted">
+            Explore healthcare information and review relevant evidence.
+        </p>
+    </div>
+
+    <a class="btn secondary" href="{{ url_for('profile') }}">
+        Edit Profile
+    </a>
+</section>
+
+
+<!-- Healthcare Question Form -->
+<section class="question-card">
+
+    <h2>Ask a Healthcare Question</h2>
+
+    <p class="muted">
+        Ask health-related questions in Hindi, English or Hinglish.
+        This system provides educational information, not a diagnosis.
+    </p>
+
+    <form
+        method="POST"
+        action="{{ url_for('ask') }}"
+        class="question-form"
+    >
+        <label class="sr-only" for="question">
+            Your healthcare question
+        </label>
+
+        <textarea
+            id="question"
+            name="question"
+            maxlength="1000"
+            required
+            placeholder="Example: Bukhar kyu hota hai? What causes fever?"
+        >{{ question }}</textarea>
+
+        <div class="form-bottom">
+            <span class="small">
+                <span id="char-count">0</span>/1000 characters
+            </span>
+
+            <button
+                class="btn primary"
+                type="submit"
+                id="ask-button"
+            >
+                Explore Health Information
+            </button>
+        </div>
+    </form>
+
+</section>
+
+
+<!-- Answer and Evidence Results -->
+{% if answer is not none %}
+
+<section class="result-card">
+
+    <div class="result-heading">
+        <div>
+            <span class="badge">Your Result</span>
+            <h2>Healthcare Information Summary</h2>
+        </div>
+
+        <span class="result-status">
+            {{ status }}
+        </span>
+    </div>
+
+
+    <!-- Response Mode -->
+    {% if mode == "AI" %}
+
+        <p class="small">
+            Mode: AI-assisted response
+        </p>
+
+    {% elif mode == "DEMO" %}
+
+        <p class="small">
+            Mode: Local demonstration
+        </p>
+
+    {% else %}
+
+        <p class="small">
+            Mode: Fallback response
+        </p>
+
+    {% endif %}
+
+
+    <!-- AI Answer -->
+    <div class="answer-text">{{ answer }}</div>
+
+
+    <!-- Separate Local Evidence and Online Sources -->
+    {% set local_sources = evidence
+        | rejectattr('source_type', 'defined')
+        | list
+    %}
+
+    {% set online_sources = evidence
+        | selectattr('source_type', 'defined')
+        | selectattr('source_type', 'equalto', 'online_reference')
+        | list
+    %}
+
+
+    <!-- Local Evidence -->
+    <section class="source-section">
+
+        <div class="source-section-heading">
+            <span class="badge">Local Database</span>
+            <h3>Local Evidence Sources</h3>
+        </div>
+
+        {% if local_sources %}
+
+            <div class="evidence-list">
+
+                {% for item in local_sources %}
+
+                    <article class="evidence-item">
+
+                        <h4>
+                            {{ item.get('title', 'Untitled source') }}
+                        </h4>
+
+                        {% if item.get('summary') %}
+                            <p>
+                                {{ item.get('summary') }}
+                            </p>
+                        {% endif %}
+
+                        {% if item.get('source_name') %}
+                            <p class="small">
+                                <strong>Source:</strong>
+                                {{ item.get('source_name') }}
+                            </p>
+                        {% endif %}
+
+                        {% if item.get('source_url', '').startswith('https://') %}
+
+                            <a
+                                href="{{ item.get('source_url') }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Read Original Source ↗
+                            </a>
+
+                        {% endif %}
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-source">
+                No matching source was found in the local database.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Online Medical Sources -->
+    <section class="source-section online-section">
+
+        <div class="source-section-heading">
+            <span class="badge online-badge">Online Search</span>
+            <h3>Online Medical Sources</h3>
+            <p class="muted">
+                Relevant health information retrieved from MedlinePlus.
+            </p>
+        </div>
+
+        {% if online_sources %}
+
+            <div class="evidence-list">
+
+                {% for item in online_sources %}
+
+                    <article class="evidence-item online-evidence-item">
+
+                        <h4>
+                            {{ item.get('title', 'Medical Information') }}
+                        </h4>
+
+                        {% if item.get('summary') %}
+                            <p>
+                                {{ item.get('summary') }}
+                            </p>
+                        {% endif %}
+
+                        <p class="small">
+                            <strong>Source:</strong>
+                            {{ item.get('source_name', 'Medical reference') }}
+                        </p>
+
+                        {% if item.get('source_url', '').startswith('https://medlineplus.gov/') %}
+
+                            <a
+                                href="{{ item.get('source_url') }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Read Original Source ↗
+                            </a>
+
+                        {% endif %}
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-source">
+                No online medical sources were retrieved for this question.
+                This does not mean that the health information is false.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Medical Disclaimer -->
+    <div class="notice">
+
+        <strong>Important Medical Disclaimer</strong>
+
+        <p>
+            These sources may be relevant to your question, but their
+            presence does not prove that a specific healthcare claim is
+            true. Review the original sources and their context.
+        </p>
+
+        <p>
+            HealthCheck AI provides educational information only.
+            It does not replace a qualified healthcare professional
+            or provide a confirmed medical diagnosis.
+        </p>
+
+        <p>
+            Seek urgent medical assistance for potentially serious
+            symptoms or emergencies.
+        </p>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- Recent Search History -->
+<section class="section">
+
+    <div class="section-heading row-heading">
+        <div>
+            <span class="badge">Your Activity</span>
+            <h2>Recent Questions</h2>
+        </div>
+
+        <a href="{{ url_for('history') }}">
+            View All History →
+        </a>
+    </div>
+
+
+    {% if history %}
+
+        <div class="history-list">
+
+            {% for item in history %}
+
+                <article class="history-item">
+
+                    <div>
+                        <h3>
+                            {{ item['question'] }}
+                        </h3>
+
+                        <p class="small">
+                            {{ item['created_at'] }}
+                            ·
+                            {{ item['status'] }}
+                        </p>
+                    </div>
+
+                    <a
+                        class="btn secondary small-btn"
+                        href="{{ url_for(
+                            'history_detail',
+                            history_id=item['id']
+                        ) }}"
+                    >
+                        View
+                    </a>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>No Questions Yet</h3>
+
+            <p>
+                Your submitted healthcare questions will appear here.
+            </p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- Character Counter -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const questionBox = document.getElementById("question");
+    const charCount = document.getElementById("char-count");
+    const askButton = document.getElementById("ask-button");
+
+    if (questionBox && charCount) {
+        function updateCharacterCount() {
+            charCount.textContent = questionBox.value.length;
+        }
+
+        updateCharacterCount();
+        questionBox.addEventListener("input", updateCharacterCount);
+    }
+
+    if (questionBox && askButton) {
+        const questionForm = questionBox.closest("form");
+
+        if (questionForm) {
+            questionForm.addEventListener("submit", function () {
+                askButton.disabled = true;
+                askButton.textContent = "Searching Medical Information...";
+            });
+        }
+    }
+});
+</script>
+
+{% endblock %}

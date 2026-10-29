@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Saved Answer | HealthCheck AI{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <span class="badge">Saved Result</span>
+    <h1>Previous Question</h1>
+</section>
+
+<section class="result-card">
+    <h2>{{ record['question'] }}</h2>
+    <p class="small">{{ record['created_at'] }}</p>
+    <p><strong>Evidence status:</strong> {{ record['status'] }}</p>
+
+```
+<h3>Saved Answer</h3>
+<div class="answer-text">{{ record['ai_answer'] }}</div>
+
+{% if record['evidence_title'] %}
+    <h3>Potential Evidence Matches</h3>
+    <p>{{ record['evidence_title'] }}</p>
+{% endif %}
+
+<p class="notice">
+    A saved response is educational information, not a diagnosis or
+    confirmation that a medical claim is true.
+</p>
+
+<a class="btn secondary" href="{{ url_for('history') }}">Back to History</a>
+```
+
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}My History | HealthCheck AI{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <span class="badge">Saved Activity</span>
+    <h1>My Search History</h1>
+    <p class="muted">Only your account's saved questions are shown here.</p>
+</section>
+
+{% if records %} <div class="history-list">
+{% for item in records %} <article class="history-item"> <div> <h3>{{ item['question'] }}</h3> <p class="small">{{ item['created_at'] }}</p> <p class="small">{{ item['status'] }}</p> </div> <a class="btn secondary small-btn"
+            href="{{ url_for('history_detail', history_id=item['id']) }}">View Answer</a> </article>
+{% endfor %} </div>
+{% else %} <div class="empty-state"> <h3>Your history is empty</h3> <p>Ask a question on the dashboard to get started.</p> <a class="btn primary" href="{{ url_for('dashboard') }}">Open Dashboard</a> </div>
+{% endif %}
+{% endblock %}

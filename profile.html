@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}My Profile | HealthCheck AI{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <span class="badge">Account Settings</span>
+    <h1>My Profile</h1>
+    <p class="muted">Manage your account information.</p>
+</section>
+
+<section class="auth-card profile-card">
+    <form method="POST" class="form-stack">
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" maxlength="80"
+               value="{{ user['name'] }}" required>
+
+    <label for="email">Email address</label>
+    <input id="email" type="email" value="{{ user['email'] }}" disabled>
+    <p class="small">Email address cannot be changed here.</p>
+
+    <label for="age">Age (optional)</label>
+    <input id="age" name="age" type="number" min="1" max="120"
+           value="{{ user['age'] or '' }}">
+
+    <label for="profile_notes">Profile notes (optional)</label>
+    <textarea id="profile_notes" name="profile_notes" maxlength="500"
+              placeholder="Optional non-sensitive notes">{{ user['profile_notes'] or '' }}</textarea>
+    <p class="small">Avoid entering private medical details or sensitive personal information.</p>
+
+    <button class="btn primary" type="submit">Save Changes</button>
+</form>
+
+<p class="small">Member since: {{ user['created_at'] }}</p>
+
+</section>
+{% endblock %}

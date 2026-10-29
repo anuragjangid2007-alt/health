@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}HealthCheck AI | Home{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <span class="badge">AI + Healthcare Information</span>
+        <h1>Understand Health Information.<br><span>Check the Evidence.</span></h1>
+        <p>
+            Explore healthcare information with AI assistance and relevant
+            evidence sources. Learn what the available evidence says and
+            where more verification is needed.
+        </p>
+        <div class="hero-actions">
+            {% if session.get('user_id') %}
+                <a class="btn primary" href="{{ url_for('dashboard') }}">Open Dashboard</a>
+            {% else %}
+                <a class="btn primary" href="{{ url_for('register') }}">Create Free Account</a>
+                <a class="btn secondary" href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+        <p class="small">Educational project · Not a diagnostic tool</p>
+    </div>
+    <div class="hero-card">
+        <div class="medical-icon">✚</div>
+        <h2>Evidence Awareness</h2>
+        <p>Explore sources, understand uncertainty, and make informed decisions with qualified healthcare professionals.</p>
+        <div class="status-line"><span class="status-dot"></span> Evidence-assisted information</div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-heading">
+        <span class="badge">What you can do</span>
+        <h2>Explore the features</h2>
+    </div>
+    <div class="feature-grid">
+        <article class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Assistance</h3>
+            <p>Ask general healthcare information questions and receive an accessible explanation.</p>
+        </article>
+        <article class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Evidence Sources</h3>
+            <p>Find potentially relevant sources from the built-in educational evidence database.</p>
+        </article>
+        <article class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Separate Accounts</h3>
+            <p>Register an account and access your own profile and question history.</p>
+        </article>
+        <article class="feature-card">
+            <div class="feature-icon">🕘</div>
+            <h3>Search History</h3>
+            <p>Revisit previous questions and responses saved to your account.</p>
+        </article>
+    </div>
+</section>
+
+<section class="notice">
+    <strong>Important:</strong> A matching keyword or an AI-generated answer does not
+    prove a medical claim is true. Read original sources and consult a qualified
+    healthcare professional about personal medical decisions.
+</section>
+{% endblock %}

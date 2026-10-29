@@ -1,0 +1,137 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}HealthCheck AI{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+    <style>
+        .language-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .language-box label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #google_translate_element {
+            display: inline-block;
+        }
+
+        .goog-te-gadget {
+            font-size: 0 !important;
+        }
+
+        .goog-te-gadget .goog-te-combo {
+            padding: 7px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            max-width: 150px;
+            cursor: pointer;
+        }
+
+        body {
+            top: 0 !important;
+        }
+
+        .goog-te-banner-frame,
+        #goog-gt-tt,
+        .goog-te-balloon-frame {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .language-box {
+                margin: 10px 0;
+            }
+
+            .navbar nav {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <a class="brand" href="{{ url_for('index') }}">
+            HealthCheck <span>AI</span>
+        </a>
+
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+                <a href="{{ url_for('history') }}">History</a>
+                <a class="nav-button" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a class="nav-button" href="{{ url_for('register') }}">Get Started</a>
+            {% endif %}
+
+            <div class="language-box">
+                <label for="google_translate_element">🌐 Language:</label>
+                <div id="google_translate_element"></div>
+            </div>
+        </nav>
+
+    </header>
+
+    <main class="container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-area">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <footer class="footer">
+        <p>HealthCheck AI · Healthcare Information & Evidence Awareness</p>
+        <p class="small">
+            Educational prototype only. Not a medical diagnosis or substitute for professional care.
+        </p>
+    </footer>
+
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,hi',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false
+                },
+                'google_translate_element'
+            );
+        }
+    </script>
+
+    <script
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
+
+</body>
+</html>
